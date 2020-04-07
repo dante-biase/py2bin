@@ -46,4 +46,4 @@ $ ./py2bin.py PY_FILE [OPTIONS]
 ```
 ### NOTES
 1. the output binary will be named with the stem of `PY_FILE`
-2. if `destination_directory` is not specified, the binary will be created in `py2bin/bin`
+2. if `destination_directory` is not specified, the binary will be placed in the same directory as `PY_FILE`
