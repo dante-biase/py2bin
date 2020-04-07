@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-from os import getcwd, chdir, mkdir, remove
+from os import getcwd, chdir, remove
 from os.path import dirname, exists
 from shutil import copy2, rmtree, copytree
 from subprocess import call
@@ -24,12 +24,13 @@ from callbacks import *
 def main(py_file, destination_directory, optimize):
 
 	owd = getcwd()  # save copy of current working directory to create absolute path in case of runtime error
+	
 	temporary_directory = mkdtemp()
 
 	try:
 		# -------------------------------------------- setup binary variables ---------------------------------------------
-		py_file_parent_directory = Path(dirname(py_file))
 		py_file = Path(py_file)
+		py_file_parent_directory = Path(dirname(py_file.absolute()))
 		binary_name = py_file.stem
 		if not destination_directory:
 			binary_target_path = f"{py_file_parent_directory.absolute()}/{binary_name}"
