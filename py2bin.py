@@ -54,9 +54,15 @@ def main(py_file, destination_directory, optimize):
 		chdir("temp")
 
 		if optimize:
-			call(["python3", "-OO", "-m", "PyInstaller", f"{py_file_parent_directory.name}/{py_file.name}", "--onefile", "--hidden-import", "pkg_resources.py2_warn"])
+			call([
+				"python3", "-OO", "-m", "PyInstaller", f"{py_file_parent_directory.name}/{py_file.name}", "--onefile", 
+				"--hidden-import", "pkg_resources.py2_warn"
+			])
 		else:
-			call(["pyinstaller", f"{py_file_parent_directory.name}/{py_file.name}", "--onefile", "--hidden-import", "pkg_resources.py2_warn"])
+			call([
+				"pyinstaller", f"{py_file_parent_directory.name}/{py_file.name}", "--onefile", "--hidden-import", 
+				"pkg_resources.py2_warn"
+			])
 		
 		chdir("..")
 
