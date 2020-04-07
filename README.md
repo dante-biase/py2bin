@@ -20,19 +20,10 @@
 - [PyInstaller](https://github.com/pyinstaller/pyinstaller)
 - [Click](https://github.com/pallets/click)
 
-## Installation
-
-### Homebrew
-```bash
-$ brew install dante-biase/x2appUtils/py2bin
-```
-
-
-## Usage
-
-```bash
-$ py2bin PY_FILE [OPTIONS]
-```
+|          	| Installation                                                                                                                          	| Usage                           	|
+|----------	|---------------------------------------------------------------------------------------------------------------------------------------	|---------------------------------	|
+| **Homebrew** 	| $ brew install dante-biase/x2appUtils/py2bin                                                                                          	| $ py2bin PY_FILE [OPTIONS]      	|
+| **Manual**   	| $ git clone https://github.com/dante-biase/py2bin.git<br>$ cd py2bin<br>$ pip3 install -r requirements.txt<br>$ chmod +x py2bin.py 	| $ ./py2bin.py PY_FILE [OPTIONS] 	|
 
 ### PY_FILE
 > specifies the py file to be converted into a binary, required
