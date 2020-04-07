@@ -24,7 +24,7 @@
 
 ### Homebrew
 ```bash
-$ brew install dante-biase/py2utils/py2bin
+$ brew install dante-biase/x2appUtils/py2bin
 ```
 
 
