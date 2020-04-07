@@ -48,10 +48,6 @@ def main(py_file, destination_directory, optimize):
 				exit(0)
 		
 		# --------------------- create binary by isolating PyInstaller output in temporary directory ----------------------
-		if exists(temporary_directory):
-			rmtree(temporary_directory)
-
-		mkdir(temporary_directory)
 		copytree(py_file_parent_directory.absolute(), f"{temporary_directory}/{py_file_parent_directory.name}")
 		chdir(temporary_directory)
 
