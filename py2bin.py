@@ -4,6 +4,7 @@ from os import getcwd, chdir, mkdir, remove
 from os.path import dirname, exists
 from shutil import copy2, rmtree, copytree
 from subprocess import call
+from tempfile import mkdtemp
 
 import click
 
@@ -22,7 +23,8 @@ from callbacks import *
               help="compile with optimizations")
 def main(py_file, destination_directory, optimize):
 
-	cwd = getcwd()  # save copy of current working directory to create absolute path in case of runtime error
+	owd = getcwd()  # save copy of current working directory to create absolute path in case of runtime error
+	temporary_directory = mkdtemp()
 
 	try:
 		# -------------------------------------------- setup binary variables ---------------------------------------------
@@ -46,12 +48,12 @@ def main(py_file, destination_directory, optimize):
 				exit(0)
 		
 		# --------------------- create binary by isolating PyInstaller output in temporary directory ----------------------
-		if exists("temp"):
-			rmtree("temp")
+		if exists(temporary_directory):
+			rmtree(temporary_directory)
 
-		mkdir("temp")
-		copytree(py_file_parent_directory.absolute(), f"temp/{py_file_parent_directory.name}")
-		chdir("temp")
+		mkdir(temporary_directory)
+		copytree(py_file_parent_directory.absolute(), f"{temporary_directory}/{py_file_parent_directory.name}")
+		chdir(temporary_directory)
 
 		if optimize:
 			call([
@@ -64,23 +66,21 @@ def main(py_file, destination_directory, optimize):
 				"pkg_resources.py2_warn"
 			])
 		
-		chdir("..")
+		chdir(owd)
 
 		# ------------------------------------- extract binary to target destination --------------------------------------
-		copy2(f"temp/dist/{binary_name}", binary_target_path)
+		copy2(f"{temporary_directory}/dist/{binary_name}", binary_target_path)
 
 		# ------------------------------------------------- cleanup ----------------------------------------------------
-		rmtree("temp")
+		rmtree(temporary_directory)
 
 		# --------------------------------------------- show binary in finder ---------------------------------------------
 		call(["open", "-R", binary_target_path])
 
 	except Exception as error:	# TODO: specify Exception
-
 		# ---------------------------------------- cleanup on error before exit ----------------------------------------
-		temp_directory = f"{cwd}/temp"		
-		if exists(temp_directory):
-			rmtree(temp_directory)
+		if exists(temporary_directory):
+			rmtree(temporary_directory)
 
 		raise Exception(repr(error))
 
