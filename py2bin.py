@@ -1,7 +1,8 @@
 #!/usr/local/bin/python3
 
-from os import getcwd, mkdir, chdir, remove
-from shutil import rmtree, copy2
+from os import getcwd, chdir, mkdir, remove
+from os.path import dirname, exists
+from shutil import copy2, rmtree, copytree
 from subprocess import call
 
 import click
@@ -13,7 +14,7 @@ from callbacks import *
 @click.argument("py_file",
                 callback=check_py_file)
 @click.option("-d", "--destination_directory",
-              default="bin",
+              default=None,
               callback=check_destination_directory,
               help="directory to create the binary in")
 @click.option("-o", "--optimize",
@@ -25,9 +26,13 @@ def main(py_file, destination_directory, optimize):
 
 	try:
 		# -------------------------------------------- setup binary variables ---------------------------------------------
+		py_file_parent_directory = Path(dirname(py_file))
 		py_file = Path(py_file)
 		binary_name = py_file.stem
-		binary_target_path = f"{destination_directory}/{binary_name}"
+		if not destination_directory:
+			binary_target_path = f"{py_file_parent_directory.absolute()}/{binary_name}"
+		else:
+			binary_target_path = f"{destination_directory}/{binary_name}"
 
 		# ------------------------------------------- check binary target path --------------------------------------------
 		if exists(binary_target_path):
@@ -41,16 +46,17 @@ def main(py_file, destination_directory, optimize):
 				exit(0)
 		
 		# --------------------- create binary by isolating PyInstaller output in temporary directory ----------------------
-		mkdir("temp")
+		if exists("temp"):
+			rmtree("temp")
 
-		# copy py file to temp to contain creation of __pycache__ after calling pyinstaller
-		copy2(py_file.absolute(), "temp")
-		
+		mkdir("temp")
+		copytree(py_file_parent_directory.absolute(), f"temp/{py_file_parent_directory.name}")
 		chdir("temp")
+
 		if optimize:
-			call(["python3", "-OO", "-m", "PyInstaller", py_file.name, "--onefile"])
+			call(["python3", "-OO", "-m", "PyInstaller", f"{py_file_parent_directory.name}/{py_file.name}", "--onefile", "--hidden-import", "pkg_resources.py2_warn"])
 		else:
-			call(["pyinstaller", py_file.name, "--onefile"])
+			call(["pyinstaller", f"{py_file_parent_directory.name}/{py_file.name}", "--onefile", "--hidden-import", "pkg_resources.py2_warn"])
 		
 		chdir("..")
 
@@ -66,10 +72,6 @@ def main(py_file, destination_directory, optimize):
 	except Exception as error:	# TODO: specify Exception
 
 		# ---------------------------------------- cleanup on error before exit ----------------------------------------
-		bin_directory = f"{cwd}/bin"
-		if exists(bin_directory):
-			rmtree(bin_directory)
-
 		temp_directory = f"{cwd}/temp"		
 		if exists(temp_directory):
 			rmtree(temp_directory)
