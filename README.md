@@ -20,6 +20,8 @@
 - [PyInstaller](https://github.com/pyinstaller/pyinstaller)
 - [Click](https://github.com/pallets/click)
 
+## Installation and Usage
+
 |          	| Installation                                                                                                                          	| Usage                           	|
 |----------	|---------------------------------------------------------------------------------------------------------------------------------------	|---------------------------------	|
 | **Homebrew** 	| $ brew install dante-biase/x2appUtils/py2bin                                                                                          	| $ py2bin PY_FILE [OPTIONS]      	|
