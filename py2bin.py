@@ -18,7 +18,7 @@ from callbacks import *
               help="directory to create the binary in")
 @click.option("-o", "--optimize",
 			  is_flag=True,
-              help="whether to compile with optimizations")
+              help="compile with optimizations")
 def main(py_file, destination_directory, optimize):
 
 	cwd = getcwd()  # save copy of current working directory to create absolute path in case of runtime error
