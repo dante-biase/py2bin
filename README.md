@@ -22,17 +22,16 @@
 
 ## Installation
 
+### Homebrew
 ```bash
-$ git clone https://github.com/dante-biase/py2bin.git
-$ cd py2bin
-$ pip3 install -r requirements.txt
-$ chmod +x py2bin.py
+$ brew install dante-biase/py2utils/py2bin
 ```
+
 
 ## Usage
 
 ```bash
-$ ./py2bin.py PY_FILE [OPTIONS]
+$ py2bin PY_FILE [OPTIONS]
 ```
 
 ### PY_FILE
