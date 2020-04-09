@@ -23,15 +23,16 @@ from callbacks import *
               help="compile with optimizations")
 def main(py_file, destination_directory, optimize):
 
-	owd = getcwd()  # save copy of current working directory to create absolute path in case of runtime error
-	
-	temporary_directory = mkdtemp()
+	owd = getcwd()  # save copy of original working directory to create absolute path in case of runtime error
+	temporary_directory = mkdtemp()	# create temporary directory
 
 	try:
 		# -------------------------------------------- setup binary variables ---------------------------------------------
 		py_file = Path(py_file)
 		py_file_parent_directory = Path(dirname(py_file.absolute()))
-		binary_name = py_file.stem
+		binary_name = f"{py_file.stem}"
+		binary_resources = f"{py_file_parent_directory.absolute()}/resources"
+
 		if not destination_directory:
 			binary_target_path = f"{py_file_parent_directory.absolute()}/{binary_name}"
 		else:
@@ -39,7 +40,7 @@ def main(py_file, destination_directory, optimize):
 
 		# ------------------------------------------- check binary target path --------------------------------------------
 		if exists(binary_target_path):
-			overwrite = ''
+			overwrite = ""
 			while not (overwrite == 'y' or overwrite == 'n'):
 				overwrite = str(input(f"{binary_target_path} already exists. Replace? [y/n] "))
 
@@ -47,39 +48,45 @@ def main(py_file, destination_directory, optimize):
 				remove(binary_target_path)
 			else:
 				exit(0)
-		
-		# --------------------- create binary by isolating PyInstaller output in temporary directory ----------------------
+				
+		# --------------------------- copy parent directory of script to temporary directory ---------------------------
 		copytree(py_file_parent_directory.absolute(), f"{temporary_directory}/{py_file_parent_directory.name}")
-		chdir(temporary_directory)
-
-		if optimize:
-			call([
-				"python3", "-OO", "-m", "PyInstaller", f"{py_file_parent_directory.name}/{py_file.name}", "--onefile", 
-				"--hidden-import", "pkg_resources.py2_warn"
-			])
-		else:
-			call([
-				"pyinstaller", f"{py_file_parent_directory.name}/{py_file.name}", "--onefile", "--hidden-import", 
-				"pkg_resources.py2_warn"
-			])
 		
-		chdir(owd)
+		# ----------------------------------------- go to temporary directory ------------------------------------------
+		chdir(temporary_directory)
+		py_file_copy = f"{py_file_parent_directory.name}/{py_file.name}"
+
+		# -------------------------------------------- execute pyinstaller ---------------------------------------------
+		
+		if optimize:
+			pyinstaller_call = ["python3", "-OO", "-m", "PyInstaller"]
+		else:
+			pyinstaller_call = ["pyinstaller"]
+		pyinstaller_call.append(f"{py_file_parent_directory.name}/{py_file.name}")
+
+		pyinstaller_arguments = ["--onefile", "--hidden-import", "pkg_resources.py2_warn"]		
+		if exists(binary_resources):
+			pyinstaller_arguments += ["--add-data", f"{binary_resources}:resources"]
+		
+		call(pyinstaller_call + pyinstaller_arguments)
 
 		# ------------------------------------- extract binary to target destination --------------------------------------
-		copy2(f"{temporary_directory}/dist/{binary_name}", binary_target_path)
+		copy2(f"dist/{binary_name}", binary_target_path)																
 
 		# ------------------------------------------------- cleanup ----------------------------------------------------
+		chdir(owd)
 		rmtree(temporary_directory)
 
-		# --------------------------------------------- show binary in finder ---------------------------------------------
+		# ------------------------------------------- show new binary in finder -------------------------------------------
 		call(["open", "-R", binary_target_path])
 
 	except Exception as error:	# TODO: specify Exception
+
 		# ---------------------------------------- cleanup on error before exit ----------------------------------------
 		if exists(temporary_directory):
 			rmtree(temporary_directory)
 
-		raise Exception(repr(error))
+		raise error
 
 
 if __name__ == "__main__":
