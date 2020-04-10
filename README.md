@@ -9,6 +9,7 @@
 
 ## py2bin vs PyInstaller?
 - **minimal** command-line-interface
+- **easier** resource integration
 - **cleaner** output and file handling
 - **constrained** functionality 
 
