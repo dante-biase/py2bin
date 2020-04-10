@@ -14,6 +14,10 @@ from callbacks import *
 @click.command()
 @click.argument("py_file",
                 callback=check_py_file)
+@click.option("-r", "--resources_directory",
+              default=None,
+              callback=check_resources_directory,
+              help="directory that contains resources for binary")
 @click.option("-d", "--destination_directory",
               default=None,
               callback=check_destination_directory,
@@ -21,7 +25,7 @@ from callbacks import *
 @click.option("-o", "--optimize",
 			  is_flag=True,
               help="compile with optimizations")
-def main(py_file, destination_directory, optimize):
+def main(py_file, resources_directory, destination_directory, optimize):
 
 	owd = getcwd()  # save copy of original working directory to create absolute path in case of runtime error
 	temporary_directory = mkdtemp()	# create temporary directory
@@ -31,7 +35,6 @@ def main(py_file, destination_directory, optimize):
 		py_file = Path(py_file)
 		py_file_parent_directory = Path(dirname(py_file.absolute()))
 		binary_name = f"{py_file.stem}"
-		binary_resources = f"{py_file_parent_directory.absolute()}/resources"
 
 		if not destination_directory:
 			binary_target_path = f"{py_file_parent_directory.absolute()}/{binary_name}"
@@ -64,9 +67,9 @@ def main(py_file, destination_directory, optimize):
 			pyinstaller_call = ["pyinstaller"]
 		pyinstaller_call.append(f"{py_file_parent_directory.name}/{py_file.name}")
 
-		pyinstaller_arguments = ["--onefile", "--hidden-import", "pkg_resources.py2_warn"]		
-		if exists(binary_resources):
-			pyinstaller_arguments += ["--add-data", f"{binary_resources}:resources"]
+		pyinstaller_arguments = ["--onefile", "--hidden-import", "pkg_resources.py2_warn"]
+		if resources_directory:
+			pyinstaller_arguments += ["--add-data", f"{resources_directory}:resources"]
 		
 		call(pyinstaller_call + pyinstaller_arguments)
 
