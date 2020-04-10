@@ -41,8 +41,10 @@
 ## Notes
 
 ### Resources
-1. If your script requires any resources, you must consolidate these files into a single directory - `resources_directory`
+1. If your binary requires any resources, you must consolidate these files into a single directory - `resources_directory`
 2. Install [py2x](https://github.com/dante-biase/py2x)
+
+       $ pip3 install py2x
 3. Add this import statement to any script that references resources you might need:
       
        from py2x import Resources
