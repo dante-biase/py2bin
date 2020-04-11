@@ -5,6 +5,8 @@
 
 **py2bin** is a hassle-free, command-line-tool that allows you to easily convert a Python file into a binary file with a single line of code.
 
+![](https://i.ibb.co/TwqrVdf/demo.gif)
+
 >py2bin is a streamlined version of and built from: [PyInstaller](https://pyinstaller.readthedocs.io/en/stable/).
 
 ## py2bin vs PyInstaller?
