@@ -16,11 +16,11 @@ from callbacks import *
                 callback=check_py_file)
 @click.option("-r", "--resources_directory",
               default=None,
-              callback=check_resources_directory,
+              callback=check_directory,
               help="directory that contains resources for binary")
 @click.option("-d", "--destination_directory",
               default=None,
-              callback=check_destination_directory,
+              callback=check_directory,
               help="directory to create the binary in")
 @click.option("-o", "--optimize",
 			  is_flag=True,
