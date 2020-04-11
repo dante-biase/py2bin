@@ -3,7 +3,7 @@
 from os import getcwd, chdir, remove
 from os.path import dirname, exists
 from shutil import copy2, rmtree, copytree
-from subprocess import call
+from subprocess import call, check_output, STDOUT, CalledProcessError
 from tempfile import mkdtemp
 
 import click
@@ -71,7 +71,11 @@ def main(py_file, resources_directory, destination_directory, optimize):
 		if resources_directory:
 			pyinstaller_arguments += ["--add-data", f"{resources_directory}:resources"]
 		
-		call(pyinstaller_call + pyinstaller_arguments)
+		try:
+			check_output(pyinstaller_call + pyinstaller_arguments, stderr=STDOUT)
+		except CalledProcessError as error:
+			print(error.output.decode("UTF8"))
+			exit(1)
 
 		# ------------------------------------- extract binary to target destination --------------------------------------
 		copy2(f"dist/{binary_name}", binary_target_path)																
